@@ -184,10 +184,10 @@ function build()
 
     if [ "$multi_arch" = true ] || [ "$all" = true ]; then
       msg "Building multi-arch..."
-      docker buildx build --progress plain $cache_args $push_args --platform linux/amd64,linux/arm64 -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
+      docker buildx build --platform linux/amd64,linux/arm64 -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
     else
       msg "Building local arch..."
-      docker buildx build --progress plain $cache_args $push_args -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
+      docker buildx build -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
     fi
   fi
 
