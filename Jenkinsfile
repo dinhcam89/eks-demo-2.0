@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build Docker Images') {
             steps {
-                sh 'sudo - Jenkins'
+                sh 'chmod +x -R ${env.WORKSPACE}'
                 sh 'scripts/build-image.sh -s assets -t camECR'
                 sh 'scripts/build-image.sh -s cart -t camECR'
                 sh 'scripts/build-image.sh -s catalog -t camECR'
