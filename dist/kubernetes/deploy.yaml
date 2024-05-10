@@ -141,7 +141,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-catalog:0.7.1"
+          image: "dinhcam89/dinhcam89-catalog:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -355,7 +355,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-cart:0.7.1"
+          image: "dinhcam89/dinhcam89-cart:ECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -596,7 +596,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-orders:0.7.1"
+          image: "dinhcam89/dinhcam89-orders:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -844,7 +844,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-checkout:0.7.1"
+          image: "dinhcam89/dinhcam89-checkout:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -996,7 +996,7 @@ spec:
               drop:
               - ALL
             readOnlyRootFilesystem: false
-          image: "public.ecr.aws/aws-containers/retail-store-sample-assets:0.7.1"
+          image: "dinhcam89/dinhcam89-assets:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -1130,7 +1130,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-ui:0.7.1"
+          image: "dinhcam89/dinhcam89-ui:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

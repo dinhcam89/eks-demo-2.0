@@ -1,56 +1,52 @@
 # Build Stage
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 as build-env
-
-# We tell DNF not to install Recommends and Suggests packages, which are
-# weak dependencies in DNF terminology, thus keeping our installed set of
-# packages as minimal as possible.
-RUN dnf --setopt=install_weak_deps=False install -q -y \
-    git \
-    golang \
-    && \
-    dnf clean all
+FROM alpine:3.12 as build-env
 
 ARG MAIN_PATH
 
-RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" /appsrc
+RUN apk update && \
+    apk add --no-cache bash git openssh make musl-dev go
 
-WORKDIR /appsrc
+# Configure Go
+ENV GOROOT /usr/lib/go
+ENV GOPATH /go
+ENV PATH /go/bin:$PATH
+
+RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
+
+# App
+RUN mkdir /src
+WORKDIR /src
+
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
 
 COPY . .
 
-ENV GOPROXY=direct
 RUN go build -o main $MAIN_PATH
 
-# Final stage
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+# Package Stage
+FROM alpine:3.12
 
 ENV APPUSER=appuser
 ENV APPUID=1000
 ENV APPGID=1000
 
-# We tell DNF not to install Recommends and Suggests packages, which are
-# weak dependencies in DNF terminology, thus keeping our installed set of
-# packages as minimal as possible.
-RUN dnf --setopt=install_weak_deps=False install -q -y \
-    shadow-utils \
-    && \
-    dnf clean all
-
-RUN useradd \
+RUN addgroup --gid $APPGID "$APPUSER" \
+    && adduser \
+    --disabled-password \
+    --gecos "" \
     --home "/app" \
-    --create-home \
-    --user-group \
+    --ingroup "$APPUSER" \
     --uid "$APPUID" \
     "$APPUSER"
+
+RUN apk update && \
+    apk add --no-cache curl
 
 WORKDIR /app
 USER appuser
 
-COPY --chown=appuser:appuser --from=build-env /appsrc/main /app/
-COPY --chown=appuser:appuser db/ /app/db/
-
-COPY ./ATTRIBUTION.md ./LICENSES.md
-
-ENV GIN_MODE=release
-
-ENTRYPOINT ["/app/main"]
+COPY --chown=appuser:appuser --from=build-env /src/main /app/
+ENTRYPOINT /app/main
