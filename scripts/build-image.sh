@@ -56,14 +56,12 @@ parse_params() {
   push=false
   all=false
   cnb=false
-  multi_arch=false
+  arm=false
   quiet=false
-  builder='nil'
-  repository=''
+  builder='paketobuildpacks/builder:full'
+  repository='watchn'
   tag='latest'
   service='*'
-  expected_ref=''
-  actions_cache=false
 
   while :; do
     case "${1-}" in
@@ -74,18 +72,13 @@ parse_params() {
     -q | --quiet) quiet=true ;;
     -a | --all) all=true ;;
     --cnb) cnb=true ;;
-    --multi-arch) multi_arch=true ;;
-    --actions-cache) actions_cache=true ;;
+    --arm) arm=true ;;
     -s | --service)
       service="${2-}"
       shift
       ;;
     -r | --repository)
       repository="${2-}"
-      shift
-      ;;
-    --expected-ref)
-      expected_ref="${2-}"
       shift
       ;;
     -t | --tag)
@@ -108,9 +101,9 @@ parse_params() {
 parse_params "$@"
 setup_colors
 
-quiet_args='-q'
+quiet_args=''
 
-if [ "$push" = true ] ; then
+if [ "$push" = true ] || [ "$quiet" = true ] ; then
   quiet_args='-q'
 fi
 
@@ -130,23 +123,9 @@ function build()
   dockerfile="Dockerfile"
   docker_build_args=''
   pack_args=''
-  image_name="retail-store-sample-$component"
-  tag_prefix=''
 
   if [ -f "$component_dir/scripts/build.source" ]; then
     source "$component_dir/scripts/build.source"
-  fi
-
-  tag="${tag_prefix}${tag}"
-
-  if [ -z "$expected_ref" ]; then
-    if [ -z "$repository" ]; then
-      ref="$image_name:$tag"
-    else
-      ref="$repository/$image_name:$tag"
-    fi
-  else
-    ref="$expected_ref"
   fi
 
   if [ "$cnb" = true ] || [ "$all" = true ]; then
@@ -157,37 +136,34 @@ function build()
     fi
 
     msg "Running pack build..."
-    pack $quiet_args --no-color build $image_name:build --builder $builder --path $component_dir --tag "$ref-cnb" $pack_args
+    pack $quiet_args --no-color build watchn-$component:build --builder $builder --path $component_dir --tag $repository/watchn-$component:$cnb_tag $pack_args
 
     if [ "$push" = true ] ; then
       msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
 
-      docker push -q "$ref-cnb"
+      docker push -q $repository/watchn-$component:$cnb_tag
     fi
   fi
 
   if [ "$cnb" != true ] || [ "$all" = true ]; then
-    push_args=""
+    if [ "$arm" = true ] || [ "$all" = true ]; then
+      push_args=""
 
-    if [ "$push" = true ] ; then
-      push_args="--push"
-    elif [ "$multi_arch" != true ]; then
-      push_args="--load"
-    fi
+      if [ "$push" = true ] ; then
+        push_args="--push"
+      fi
 
-    cache_args=""
-
-    if [ "$actions_cache" = true ] ; then
-      echo "Using GitHub Actions cache configuration"
-      cache_args="--cache-from type=gha,scope=${component} --cache-to type=gha,scope=${component},mode=max"
-    fi
-
-    if [ "$multi_arch" = true ] || [ "$all" = true ]; then
-      msg "Building multi-arch..."
-      docker buildx build --platform linux/amd64,linux/arm64 -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
+      msg "Running Docker buildx..."
+      docker buildx build $push_args --platform linux/amd64,linux/arm64 $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/watchn-$component:$tag $component_dir
     else
-      msg "Building local arch..."
-      docker buildx build -f "$component_dir/$dockerfile" $docker_build_args -t $ref $component_dir
+      msg "Running Docker build..."
+      docker build $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/watchn-$component:$tag $component_dir
+
+      if [ "$push" = true ] ; then
+        msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
+
+        docker push -q $repository/watchn-$component:$tag
+      fi
     fi
   fi
 
@@ -201,7 +177,6 @@ if [[ "$service" = '*' ]]; then
   build 'orders'
   build 'checkout'
   build 'assets'
-  build 'load-generator'
 else
   build "$service"
 fi
