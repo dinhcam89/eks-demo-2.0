@@ -1,3 +1,4 @@
+# Build Stage
 FROM maven:3.8-amazoncorretto-17 as build-env
 
 ARG JAR_PATH
