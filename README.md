@@ -24,7 +24,7 @@ The architecture of this project includes the following components:
 - **Microservice Application**: A sample microservice application written in [your programming language].
 - **Docker**: Containerizes the microservice application.
 - **AWS EKS (Elastic Kubernetes Service)**: Hosts the containerized application.
-- **CI/CD Pipeline**: Automates the build, test, and deploy process using GitHub Actions.
+- **CI/CD Pipeline**: Automates the build, test, and deploy process using Jenkins.
 
 ![Architecture Diagram](path/to/your/architecture/diagram.png)
 
@@ -36,7 +36,7 @@ Before you begin, ensure you have the following:
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed and configured.
 - [AWS CLI](https://aws.amazon.com/cli/) installed and configured.
 - [Docker](https://www.docker.com/) installed.
-- [GitHub Actions](https://github.com/features/actions) enabled in your repository.
+- [Jenkins](https://www.jenkins.io/) installed and configured with necessary plugins.
 
 ## Setup Instructions
 
@@ -76,50 +76,55 @@ Before you begin, ensure you have the following:
 
 ## CI/CD Pipeline
 
-The CI/CD pipeline is implemented using GitHub Actions. It includes the following steps:
+The CI/CD pipeline is implemented using Jenkins. It includes the following steps:
 
 1. **Checkout Code**: Retrieve the latest code from the repository.
 2. **Build Docker Image**: Build the Docker image of the microservice.
 3. **Push Docker Image**: Push the Docker image to Docker Hub.
 4. **Deploy to EKS**: Apply Kubernetes manifests to deploy the updated application.
 
-### GitHub Actions Workflow
+### Jenkins Pipeline Configuration
 
-Here's an example of the GitHub Actions workflow configuration (`.github/workflows/main.yml`):
+Here's an example of the Jenkins pipeline configuration (`Jenkinsfile`):
 
-```yaml
-name: CI/CD Pipeline
+```groovy
+pipeline {
+    agent any
 
-on:
-  push:
-    branches:
-      - main
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        KUBECONFIG_CREDENTIALS = credentials('kubeconfig')
+    }
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t <your_dockerhub_username>/<your_image_name>:${{ github.sha }} .
-          docker push <your_dockerhub_username>/<your_image_name>:${{ github.sha }}
-
-      - name: Update Kubernetes deployment
-        run: |
-          kubectl set image deployment/your-deployment your-container=<your_dockerhub_username>/<your_image_name>:${{ github.sha }}
-          kubectl rollout status deployment/your-deployment
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${DOCKERHUB_CREDENTIALS_USR}/${JOB_NAME}:${BUILD_ID}")
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Deploy to EKS') {
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl set image deployment/your-deployment your-container=${DOCKERHUB_CREDENTIALS_USR}/${JOB_NAME}:${BUILD_ID}'
+                    sh 'kubectl rollout status deployment/your-deployment'
+                }
+            }
+        }
+    }
+}
