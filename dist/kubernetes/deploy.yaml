@@ -355,7 +355,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-cart:ECR"
+          image: "dinhcam89/dinhcam89-cart:camECR"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
