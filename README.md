@@ -86,6 +86,8 @@ The CI/CD pipeline is implemented using Jenkins. It includes the following steps
 3. **Push Docker Image**: Push the Docker image to Docker Hub.
 4. **Deploy to EKS**: Apply Kubernetes manifests to deploy the updated application.
 
+![Pipeline overview](docs/images/flow.PNG)
+
 ### Jenkins Pipeline Configuration
 
 Here's an example of the Jenkins pipeline configuration (`Jenkinsfile`):
