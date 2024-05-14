@@ -1,130 +1,125 @@
-# AWS Containers Retail Sample
+# EKS CI/CD Pipeline for Microservice Application
 
-This is a sample application designed to illustrate various concepts related to containers on AWS. It presents a sample retail store application including a product catalog, shopping cart and checkout.
+Welcome to the EKS CI/CD pipeline project! This repository contains the code and configurations necessary to deploy a microservice application on an AWS EKS cluster using a continuous integration and continuous deployment (CI/CD) pipeline.
 
-It provides:
-- A distributed component architecture in various languages and frameworks
-- Utilization of a variety of different persistence backends for different components like MySQL, DynamoDB and Redis
-- The ability to run in various container orchestration technologies like Docker Compose, Kubernetes etc.
-- Pre-built containers image for both x86-64 and ARM64 CPU architectures
-- All components instrumented for Prometheus metrics and OpenTelemetry OTLP tracing
-- Support for Istio on Kubernetes
-- Load generator which exercises all of the infrastructure
+## Table of Contents
 
-**This project is intended for educational purposes only and not for production use.**
+- [Introduction](#introduction)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
 
-![Screenshot](/docs/images/screenshot.png)
+## Introduction
 
-## Application Architecture
+This project demonstrates the automation of deploying a microservice application onto an AWS EKS cluster using a CI/CD pipeline. The pipeline automates building, testing, and deploying the application, ensuring quick and reliable updates.
 
-The application has been deliberately over-engineered to generate multiple de-coupled components. These components generally have different infrastructure dependencies, and may support multiple "backends" (example: Carts service supports MongoDB or DynamoDB).
+## Architecture
 
-![Architecture](/docs/images/architecture.png)
+The architecture of this project includes the following components:
 
-| Component | Language | Container Image     | Description                                                                 |
-|-----------|----------|---------------------|-----------------------------------------------------------------------------|
-| ![ui workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-ui.yml/badge.svg)        | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-ui)       | Aggregates API calls to the various other services and renders the HTML UI. |
-| ![catalog workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-catalog.yml/badge.svg)   | Go       | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-catalog)  | Product catalog API                                                         |
-| ![cart workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-cart.yml/badge.svg)   | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-cart)     | User shopping carts API                                                     |
-| ![orders workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-orders.yml/badge.svg)  | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-orders)   | User orders API                                                             |
-| ![checkout workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-checkout.yml/badge.svg) | Node     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-checkout) | API to orchestrate the checkout process                                     |
-| ![assets workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-assets.yml/badge.svg)  | Nginx    | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-assets)   | Serves static assets like images related to the product catalog             |
+- **Microservice Application**: A sample microservice application written in [your programming language].
+- **Docker**: Containerizes the microservice application.
+- **AWS EKS (Elastic Kubernetes Service)**: Hosts the containerized application.
+- **CI/CD Pipeline**: Automates the build, test, and deploy process using GitHub Actions.
 
-## Quickstart
+![Architecture Diagram](path/to/your/architecture/diagram.png)
 
-The following sections provide quickstart instructions for various platforms. All of these assume that you have cloned this repository locally and are using a CLI thats current directory is the root of the code repository.
+## Prerequisites
 
-### Kubernetes
+Before you begin, ensure you have the following:
 
-This deployment method will run the application in an existing Kubernetes cluster.
+- An AWS account with permissions to create EKS clusters.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed and configured.
+- [AWS CLI](https://aws.amazon.com/cli/) installed and configured.
+- [Docker](https://www.docker.com/) installed.
+- [GitHub Actions](https://github.com/features/actions) enabled in your repository.
 
-Pre-requisites:
-- Kubernetes cluster
-- `kubectl` installed locally
+## Setup Instructions
 
-Use `kubectl` to run the application:
+1. **Clone the Repository**:
+    ```sh
+    git clone https://github.com/dinhcam89/eks_cicd.git
+    cd eks_cicd
+    ```
 
-```
-kubectl apply -f https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/dist/kubernetes/deploy.yaml
-kubectl wait --for=condition=available deployments --all
-```
+2. **AWS EKS Cluster Setup**:
+    - Create an EKS cluster using the AWS Management Console or the AWS CLI.
+    - Configure `kubectl` to use the newly created EKS cluster:
+        ```sh
+        aws eks --region <region> update-kubeconfig --name <cluster_name>
+        ```
 
-Get the URL for the frontend load balancer like so:
+3. **Build Docker Image**:
+    - Build and push the Docker image to your container registry:
+        ```sh
+        docker build -t <your_dockerhub_username>/<your_image_name>:latest .
+        docker push <your_dockerhub_username>/<your_image_name>:latest
+        ```
 
-```
-kubectl get svc ui
-```
+4. **Update Kubernetes Manifests**:
+    - Update the Kubernetes deployment manifest with your Docker image:
+        ```yaml
+        containers:
+          - name: your-microservice
+            image: <your_dockerhub_username>/<your_image_name>:latest
+        ```
 
-To remove the application use `kubectl` again:
+5. **Apply Kubernetes Manifests**:
+    - Deploy the application to the EKS cluster:
+        ```sh
+        kubectl apply -f k8s/
+        ```
 
-```
-kubectl delete -f https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/dist/kubernetes/deploy.yaml
-```
+## CI/CD Pipeline
 
-### Docker Compose
+The CI/CD pipeline is implemented using GitHub Actions. It includes the following steps:
 
-This deployment method will run the application on your local machine using `docker-compose`, and will build the containers as part of the deployment.
+1. **Checkout Code**: Retrieve the latest code from the repository.
+2. **Build Docker Image**: Build the Docker image of the microservice.
+3. **Push Docker Image**: Push the Docker image to Docker Hub.
+4. **Deploy to EKS**: Apply Kubernetes manifests to deploy the updated application.
 
-Pre-requisites:
-- Docker installed locally
+### GitHub Actions Workflow
 
-Change directory to the Docker Compose deploy directory:
+Here's an example of the GitHub Actions workflow configuration (`.github/workflows/main.yml`):
 
-```
-cd dist/docker-compose
-```
+```yaml
+name: CI/CD Pipeline
 
-Use `docker compose` to run the application containers:
+on:
+  push:
+    branches:
+      - main
 
-```
-MYSQL_PASSWORD='<some password>' docker compose --file dist/docker-compose/docker-compose.yml up
-```
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-Open the frontend in a browser window:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-```
-http://localhost:8888
-```
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-To stop the containers in `docker compose` use Ctrl+C. To delete all the containers and related resources run:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-```
-docker compose -f dist/docker-compose/docker-compose.yml down
-```
+      - name: Build and push Docker image
+        run: |
+          docker build -t <your_dockerhub_username>/<your_image_name>:${{ github.sha }} .
+          docker push <your_dockerhub_username>/<your_image_name>:${{ github.sha }}
 
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-
-This project is licensed under the MIT-0 License.
-
-This package depends on and may incorporate or retrieve a number of third-party
-software packages (such as open source packages) at install-time or build-time
-or run-time ("External Dependencies"). The External Dependencies are subject to
-license terms that you must accept in order to use this package. If you do not
-accept all of the applicable license terms, you should not use this package. We
-recommend that you consult your company’s open source approval policy before
-proceeding.
-
-Provided below is a list of External Dependencies and the applicable license
-identification as indicated by the documentation associated with the External
-Dependencies as of Amazon's most recent review.
-
-THIS INFORMATION IS PROVIDED FOR CONVENIENCE ONLY. AMAZON DOES NOT PROMISE THAT
-THE LIST OR THE APPLICABLE TERMS AND CONDITIONS ARE COMPLETE, ACCURATE, OR
-UP-TO-DATE, AND AMAZON WILL HAVE NO LIABILITY FOR ANY INACCURACIES. YOU SHOULD
-CONSULT THE DOWNLOAD SITES FOR THE EXTERNAL DEPENDENCIES FOR THE MOST COMPLETE
-AND UP-TO-DATE LICENSING INFORMATION.
-
-YOUR USE OF THE EXTERNAL DEPENDENCIES IS AT YOUR SOLE RISK. IN NO EVENT WILL
-AMAZON BE LIABLE FOR ANY DAMAGES, INCLUDING WITHOUT LIMITATION ANY DIRECT,
-INDIRECT, CONSEQUENTIAL, SPECIAL, INCIDENTAL, OR PUNITIVE DAMAGES (INCLUDING
-FOR ANY LOSS OF GOODWILL, BUSINESS INTERRUPTION, LOST PROFITS OR DATA, OR
-COMPUTER FAILURE OR MALFUNCTION) ARISING FROM OR RELATING TO THE EXTERNAL
-DEPENDENCIES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, EVEN
-IF AMAZON HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THESE LIMITATIONS
-AND DISCLAIMERS APPLY EXCEPT TO THE EXTENT PROHIBITED BY APPLICABLE LAW.
-
-MySQL Community Edition - [LICENSE](https://github.com/mysql/mysql-server/blob/5.7/LICENSE)
+      - name: Update Kubernetes deployment
+        run: |
+          kubectl set image deployment/your-deployment your-container=<your_dockerhub_username>/<your_image_name>:${{ github.sha }}
+          kubectl rollout status deployment/your-deployment
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
