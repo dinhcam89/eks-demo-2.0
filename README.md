@@ -75,7 +75,7 @@ Before you begin, ensure you have the following:
         kubectl apply -f k8s/
         ```
 ## Reference
-This project uses the source code from the microservice project found at [Microservice GitHub Repository](https://github.com/aws-containers/retail-store-sample-app). 
+This project uses the source code from the Microservice Sample Site of AWS project found at [Microservice GitHub Repository](https://github.com/aws-containers/retail-store-sample-app). 
 
 ## CI/CD Pipeline
 
