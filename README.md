@@ -72,7 +72,7 @@ Before you begin, ensure you have the following:
 5. **Apply Kubernetes Manifests**:
     - Deploy the application to the EKS cluster:
         ```sh
-        kubectl apply -f k8s/
+        kubectl apply -f dist/kubernetes/
         ```
 ## Reference
 This project uses the source code from the Microservice Sample Site of AWS project found at [Microservice GitHub Repository](https://github.com/aws-containers/retail-store-sample-app). 
