@@ -26,7 +26,7 @@ The architecture of this project includes the following components:
 - **AWS EKS (Elastic Kubernetes Service)**: Hosts the containerized application.
 - **CI/CD Pipeline**: Automates the build, test, and deploy process using Jenkins.
 
-![AWS Infrastructure Architecture](docs/images/aws_infra.png)
+![AWS Infrastructure Architecture](docs/images/aws_infra.PNG)
 
 ## Prerequisites
 
