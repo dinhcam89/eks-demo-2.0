@@ -11,6 +11,7 @@ Welcome to the EKS CI/CD pipeline project! This repository contains the code and
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
+- [Reference](#reference)
 - [License](#license)
 
 ## Introduction
@@ -73,6 +74,8 @@ Before you begin, ensure you have the following:
         ```sh
         kubectl apply -f k8s/
         ```
+## Reference
+This project uses the source code from the microservice project found at [Microservice GitHub Repository](https://github.com/aws-containers/retail-store-sample-app). 
 
 ## CI/CD Pipeline
 
@@ -128,3 +131,7 @@ pipeline {
         }
     }
 }
+
+
+
+
