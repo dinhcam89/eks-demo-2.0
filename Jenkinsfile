@@ -25,12 +25,12 @@ pipeline {
         // stage('Push Images to Docker Hub') {
         //     // some block
         //     steps {
-        //         sh 'docker push dinhcam89/retail-store-sample-catalog:0.7.1'
-        //         sh 'docker push dinhcam89/retail-store-sample-cart:0.7.1'
-        //         sh 'docker push dinhcam89/retail-store-sample-orders:0.7.1'
-        //         sh 'docker push dinhcam89/retail-store-sample-checkout:0.7.1'
-        //         sh 'docker push dinhcam89/retail-store-sample-assets:0.7.1'
-        //         sh 'docker push dinhcam89/retail-store-sample-ui:0.7.1'
+        //         sh 'docker push dinhcam89/retail-store-sample-catalog'
+        //         sh 'docker push dinhcam89/retail-store-sample-cart'
+        //         sh 'docker push dinhcam89/retail-store-sample-orders'
+        //         sh 'docker push dinhcam89/retail-store-sample-checkout'
+        //         sh 'docker push dinhcam89/retail-store-sample-assets'
+        //         sh 'docker push dinhcam89/retail-store-sample-ui'
         //     }
         // }
         // stage('Deploy to EKS Cluster') {

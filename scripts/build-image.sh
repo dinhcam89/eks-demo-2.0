@@ -149,7 +149,7 @@ function build()
   if [ "$cnb" != true ] || [ "$all" = true ]; then
     if [ "$arm" = true ] || [ "$all" = true ]; then
       push_args=""
-
+s
       if [ "$push" = true ] ; then
         push_args="--push"
       fi
