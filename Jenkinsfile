@@ -7,15 +7,15 @@ pipeline{
     }
 
     stages {
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
-                        sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
-                    }
-                }
-            }
-        }
+        // stage('Login to Docker Hub') {
+        //     steps {
+        //         script {
+        //             withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
+        //                 sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
+        //             }
+        //         }
+        //     }
+        // }
         stage('Build Docker Images') {
             steps {
                 sh "chmod +x -R ${env.WORKSPACE}"
