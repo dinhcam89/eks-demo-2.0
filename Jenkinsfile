@@ -51,9 +51,8 @@ pipeline{
         // }
         stage('Deploy to Production Environment') {
             steps {
-                script
-                {
-                    try
+                script {
+                    try{
                         timeout(time: 5, unit: 'MINUTES') {
                             env.useChoice = input message: "Can it be deployed to the production environment?", ok: "Yes",
                             parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
@@ -65,6 +64,7 @@ pipeline{
                         } else {
                             echo 'The deployment is not allowed to the production environment'
                         }
+                    }
                     catch (Exception err) {
                         // handle the exception
                     }
