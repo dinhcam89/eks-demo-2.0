@@ -22,8 +22,8 @@ resource "aws_iam_role_policy_attachment" "demo-AmazonEKSClusterPolicy" {
   role       = aws_iam_role.demo.name
 }
 
-resource "aws_eks_cluster" "demo" {
-  name     = "demo"
+resource "aws_eks_cluster" "eks-demo" {
+  name     = "eks-demo"
   role_arn = aws_iam_role.demo.arn
 
   vpc_config {
