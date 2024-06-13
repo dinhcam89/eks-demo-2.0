@@ -61,7 +61,7 @@ pipeline{
                         }
                         if (env.useChoice == 'Yes') {
                             sh 'sudo su - jenkins'
-                            sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
+                            sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
                             sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
                         } else {
                             echo 'The deployment is not allowed to the production environment'
