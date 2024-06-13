@@ -11,7 +11,7 @@ pipeline{
             steps {
                 sh 'sudo su - jenkins'
                 script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
                         sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
                     }
                 }
