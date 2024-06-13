@@ -11,11 +11,6 @@ pipeline{
             steps {
                 sh 'sudo su - jenkins'
                 sh 'echo $DOCKERHB_CREDENTIALS_PSW | echo $DOCKERHB_CREDENTIALS_USR | docker login -u $DOCKERHB_CREDENTIALS_USR -p $DOCKERHB_CREDENTIALS_PSW'
-                // script {
-                //     withCredentials([usernamePassword(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
-                //         sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
-                //     }
-                // }
             }
         }
         stage('Build Docker Images') {
