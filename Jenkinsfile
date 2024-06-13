@@ -7,15 +7,16 @@ pipeline{
     }
 
     stages {
-        // stage('Login to Docker Hub') {
-        //     steps {
-        //         script {
-        //             withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
-        //                 sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Login to Docker Hub') {
+            steps {
+                sh 'sudo su - jenkins'
+                script {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHB_CREDENTIALS')]) {
+                        sh "docker login -u ${DOCKERHB_CREDENTIALS_USR} -p ${DOCKERHB_CREDENTIALS_PSW}"
+                    }
+                }
+            }
+        }
         stage('Build Docker Images') {
             steps {
                 sh "chmod +x -R ${env.WORKSPACE}"
@@ -43,12 +44,12 @@ pipeline{
                 sh 'docker push dinhcam89/dinhcam89-ui:latest'
             }
         }
-        // stage('Deploy to Staging Environment') {
-        //     steps {
-        //         sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
-        //         sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-        //     }
-        // }
+        stage('Deploy to Staging Environment') {
+            steps {
+                sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
+                sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
+            }
+        }
         stage('Deploy to Production Environment') {
             steps {
                 script {

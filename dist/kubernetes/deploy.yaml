@@ -141,7 +141,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-catalog:camECR"
+          image: "dinhcam89/dinhcam89-catalog:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -355,7 +355,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-cart:camECR"
+          image: "dinhcam89/dinhcam89-cart:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -596,7 +596,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-orders:camECR"
+          image: "dinhcam89/dinhcam89-orders:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -844,7 +844,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-checkout:camECR"
+          image: "dinhcam89/dinhcam89-checkout:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -996,7 +996,7 @@ spec:
               drop:
               - ALL
             readOnlyRootFilesystem: false
-          image: "dinhcam89/dinhcam89-assets:camECR"
+          image: "dinhcam89/dinhcam89-assets:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -1130,7 +1130,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-ui:camECR"
+          image: "dinhcam89/dinhcam89-ui:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
