@@ -30,7 +30,6 @@ pipeline{
             }
         }
         stage('Push Images to Docker Hub') {
-            // some block
             steps {
                 sh 'docker push dinhcam89/dinhcam89-catalog:latest'
                 sh 'docker push dinhcam89/dinhcam89-cart:latest'
