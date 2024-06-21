@@ -19,7 +19,9 @@ pipeline {
                     scannerHome = tool 'SonarScanner'
                 }
                 withSonarQubeEnv('SonarQube Server') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=retail-shop-microservices"
+                    sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=retail-shop-microservices \
+                    -Dsonar.java.binaries=**/target/classes"
                 }
             }
         }
