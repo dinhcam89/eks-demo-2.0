@@ -18,9 +18,14 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-            def scannerHome = tool 'SonarScanner'
-            withSonarQubeEnv() {
-                sh "${scannerHome}/bin/sonar-scanner"
+            steps {
+                script {
+                    // requires SonarQube Scanner 2.8+
+                    scannerHome = tool 'SonarScanner'
+                }
+                withSonarQubeEnv('Sonarqube Server') {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=retail-shop-microservices"
+                }
             }
         }
         stage('Login to Docker Hub') {
@@ -61,28 +66,28 @@ pipeline {
                 sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
             }
         }
-        // stage('Deploy to Production Environment') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 timeout(time: 5, unit: 'MINUTES') {
-        //                     env.useChoice = input message: 'Can it be deployed to the production environment?', ok: 'Yes',
-        //                     parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
-        //                 }
-        //                 if (env.useChoice == 'Yes') {
-        //                     sh 'sudo su - jenkins'
-        //                     sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
-        //                     sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-        //                 } else {
-        //                     echo 'The deployment is not allowed to the production environment'
-        //                 }
-        //             }
-        //             catch (Exception err) {
-        //             // handle the exception
-        //             }
-        //         }
-        //     }
-        // }
+    // stage('Deploy to Production Environment') {
+    //     steps {
+    //         script {
+    //             try {
+    //                 timeout(time: 5, unit: 'MINUTES') {
+    //                     env.useChoice = input message: 'Can it be deployed to the production environment?', ok: 'Yes',
+    //                     parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
+    //                 }
+    //                 if (env.useChoice == 'Yes') {
+    //                     sh 'sudo su - jenkins'
+    //                     sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
+    //                     sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
+    //                 } else {
+    //                     echo 'The deployment is not allowed to the production environment'
+    //                 }
+    //             }
+    //             catch (Exception err) {
+    //             // handle the exception
+    //             }
+    //         }
+    //     }
+    // }
     }
     post {
         always {
