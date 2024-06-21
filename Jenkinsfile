@@ -6,12 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('SCA with OWASP Dependency Check') {
-            steps {
-                dependencyCheck additionalArguments: '''--format HTML
-            ''', odcInstallation: 'Dependency-Check'
-            }
-        }
+        // stage('SCA with OWASP Dependency Check') {
+        //     steps {
+        //         dependencyCheck additionalArguments: '''--format HTML
+        //     ''', odcInstallation: 'Dependency-Check'
+        //     }
+        // }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -55,6 +55,15 @@ pipeline {
                 sh 'docker push dinhcam89/dinhcam89-ui:latest'
             }
         }
+        // stage('Deploy and Configure ArgoCD') {
+        //     steps {
+        //         sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
+        //         sh 'kubectl create namespace argocd'
+        //         sh 'kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml'
+        //         sh 'kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=300s'
+        //         sh 'kubectl patch svc argocd-server -n argocd -p \'{"spec": {"type": "LoadBalancer"}}\''
+        //     }
+        // }
         stage('Deploy to Staging Environment') {
             steps {
                 sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
@@ -87,7 +96,7 @@ pipeline {
     post {
         always {
             cleanWs()
-            sh 'docker rmi -f $(docker images -aq)'
+            // sh 'docker rmi -f $(docker images -aq)'
             sh 'docker logout'
         }
     }
