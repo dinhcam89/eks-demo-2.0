@@ -21,8 +21,7 @@ pipeline {
                 withSonarQubeEnv('SonarQube Server') {
                     sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=retail-shop-microservices \
-                    -Dsonar.sources=src/main/java/ \
-                    -Dsonar.java.binaries=**/target/classes"
+                    -Dsonar.java.binaries=."
                 }
             }
         }
