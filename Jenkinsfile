@@ -9,7 +9,7 @@ pipeline {
         stage('SCA with OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: '''--format HTML
-            ''', odcInstallation: 'DP-Check'
+            ''', odcInstallation: 'Dependency-Check'
             }
         }
         stage('SonarQube Analysis') {
