@@ -18,7 +18,7 @@ pipeline {
                     // requires SonarQube Scanner 2.8+
                     scannerHome = tool 'SonarScanner'
                 }
-                withSonarQubeEnv('Sonarqube Server') {
+                withSonarQubeEnv('sonarqube-token') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=retail-shop-microservices"
                 }
             }
