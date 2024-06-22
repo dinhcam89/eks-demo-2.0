@@ -66,12 +66,12 @@ pipeline {
         //         sh 'kubectl patch svc argocd-server -n argocd -p \'{"spec": {"type": "LoadBalancer"}}\''
         //     }
         // }
-        stage('Deploy to Staging Environment') {
-            steps {
-                sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
-                sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-            }
-        }
+        // stage('Deploy to Staging Environment') {
+        //     steps {
+        //         sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
+        //         sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
+        //     }
+        // }
     // stage('Deploy to Production Environment') {
     //     steps {
     //         script {
@@ -94,6 +94,16 @@ pipeline {
     //         }
     //     }
     // }
+    stage('Scan Docker Images with Trivy') {
+        steps {
+            sh 'TMPDIR=/home/jenkins'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-catalog:latest'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-cart:latest'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-orders:latest'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-checkout:latest'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-assets:latest'
+            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-ui:latest'
+        }
     }
     post {
         always {
