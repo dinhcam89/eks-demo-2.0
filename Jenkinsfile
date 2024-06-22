@@ -111,6 +111,7 @@ pipeline {
             cleanWs()
             // sh 'docker rmi -f $(docker images -aq)'
             sh 'docker logout'
+            //
         }
     }
 }
