@@ -99,21 +99,21 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Scan Docker Images with Trivy') {
-            steps {
-                sh 'TMPDIR=/home/jenkins'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-catalog.html dinhcam89/dinhcam89-catalog:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-cart.html dinhcam89/dinhcam89-cart:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-orders.html dinhcam89/dinhcam89-orders:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-checkout.html dinhcam89/dinhcam89-checkout:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-assets.html dinhcam89/dinhcam89-assets:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-ui.html dinhcam89/dinhcam89-ui:latest'
-            }
-        }
+        // stage('Scan Docker Images with Trivy') {
+        //     steps {
+        //         sh 'TMPDIR=/home/jenkins'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-catalog.html dinhcam89/dinhcam89-catalog:latest'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-cart.html dinhcam89/dinhcam89-cart:latest'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-orders.html dinhcam89/dinhcam89-orders:latest'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-checkout.html dinhcam89/dinhcam89-checkout:latest'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-assets.html dinhcam89/dinhcam89-assets:latest'
+        //         sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-ui.html dinhcam89/dinhcam89-ui:latest'
+        //     }
+        // }
     }
     post {
         always {
-            cleanWs()
+            //cleanWs()
             // sh 'docker rmi -f $(docker images -aq)'
             sh 'docker logout'
         //
