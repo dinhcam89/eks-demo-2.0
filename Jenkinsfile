@@ -72,37 +72,38 @@ pipeline {
         //         sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
         //     }
         // }
-    // stage('Deploy to Production Environment') {
-    //     steps {
-    //         script {
-    //             try {
-    //                 timeout(time: 5, unit: 'MINUTES') {
-    //                     env.useChoice = input message: 'Can it be deployed to the production environment?', ok: 'Yes',
-    //                     parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
-    //                 }
-    //                 if (env.useChoice == 'Yes') {
-    //                     sh 'sudo su - jenkins'
-    //                     sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
-    //                     sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-    //                 } else {
-    //                     echo 'The deployment is not allowed to the production environment'
-    //                 }
-    //             }
-    //             catch (Exception err) {
-    //             // handle the exception
-    //             }
-    //         }
-    //     }
-    // }
-    stage('Scan Docker Images with Trivy') {
-        steps {
-            sh 'TMPDIR=/home/jenkins'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-catalog:latest'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-cart:latest'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-orders:latest'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-checkout:latest'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-assets:latest'
-            sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-ui:latest'
+        // stage('Deploy to Production Environment') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 timeout(time: 5, unit: 'MINUTES') {
+        //                     env.useChoice = input message: 'Can it be deployed to the production environment?', ok: 'Yes',
+        //                     parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
+        //                 }
+        //                 if (env.useChoice == 'Yes') {
+        //                     sh 'sudo su - jenkins'
+        //                     sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
+        //                     sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
+        //                 } else {
+        //                     echo 'The deployment is not allowed to the production environment'
+        //                 }
+        //             }
+        //             catch (Exception err) {
+        //             // handle the exception
+        //             }
+        //         }
+        //     }
+        // }
+        stage('Scan Docker Images with Trivy') {
+            steps {
+                sh 'TMPDIR=/home/jenkins'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-catalog:latest'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-cart:latest'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-orders:latest'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-checkout:latest'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-assets:latest'
+                sh 'trivy --quiet --exit-code 1 --severity HIGH,CRITICAL dinhcam89/dinhcam89-ui:latest'
+            }
         }
     }
     post {
