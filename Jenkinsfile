@@ -97,12 +97,12 @@ pipeline {
         stage('Scan Docker Images with Trivy') {
             steps {
                 sh 'TMPDIR=/home/jenkins'
-                sh 'trivy dinhcam89/dinhcam89-catalog:latest'
-                sh 'trivy dinhcam89/dinhcam89-cart:latest'
-                sh 'trivy dinhcam89/dinhcam89-orders:latest'
-                sh 'trivy dinhcam89/dinhcam89-checkout:latest'
-                sh 'trivy dinhcam89/dinhcam89-assets:latest'
-                sh 'trivy dinhcam89/dinhcam89-ui:latest'
+                sh 'trivy image dinhcam89/dinhcam89-catalog:latest'
+                sh 'trivy image dinhcam89/dinhcam89-cart:latest'
+                sh 'trivy image dinhcam89/dinhcam89-orders:latest'
+                sh 'trivy image dinhcam89/dinhcam89-checkout:latest'
+                sh 'trivy image dinhcam89/dinhcam89-assets:latest'
+                sh 'trivy image dinhcam89/dinhcam89-ui:latest'
             }
         }
     }
