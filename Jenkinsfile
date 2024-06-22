@@ -6,12 +6,15 @@ pipeline {
     }
 
     stages {
-        // stage('SCA with OWASP Dependency Check') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '''--format HTML
-        //     ''', odcInstallation: 'Dependency-Check'
-        //     }
-        // }
+        steps {
+            dependencyCheck additionalArguments: '''
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+        }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -111,7 +114,7 @@ pipeline {
             cleanWs()
             // sh 'docker rmi -f $(docker images -aq)'
             sh 'docker logout'
-            //
+        //
         }
     }
 }
