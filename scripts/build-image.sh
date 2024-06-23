@@ -137,7 +137,7 @@ function build()
     fi
 
     msg "Running pack build..."
-    pack $quiet_args --no-color build dinhcam89-$component:build --builder $builder --path $component_dir --tag $repository/dinhcam89-$component:$cnb_tag $pack_args
+    pack $quiet_args --no-color build dinhcam89-$component:build --builder $builder --path $component_dir --tag $repository/retail-store-$component:$cnb_tag $pack_args
 
     if [ "$push" = true ] ; then
       msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
@@ -155,15 +155,15 @@ s
       fi
 
       msg "Running Docker buildx..."
-      docker buildx build $push_args --platform linux/amd64,linux/arm64 $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/dinhcam89-$component:$tag $component_dir
+      docker buildx build $push_args --platform linux/amd64,linux/arm64 $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/retail-store-$component:$tag $component_dir
     else
       msg "Running Docker build..."
-      docker build $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/dinhcam89-$component:$tag $component_dir
+      docker build $quiet_args -f "$component_dir/$dockerfile" $docker_build_args -t $repository/retail-store-$component:$tag $component_dir
 
       if [ "$push" = true ] ; then
         msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
 
-        docker push -q $repository/dinhcam89-$component:$tag
+        docker push -q $repository/retail-store-$component:$tag
       fi
     fi
   fi
