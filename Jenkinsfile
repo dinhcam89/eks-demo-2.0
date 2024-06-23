@@ -47,6 +47,7 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
+        //
         stage('SonarQube Analysis') {
             steps {
                 script {
