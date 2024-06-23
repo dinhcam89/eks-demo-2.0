@@ -141,7 +141,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-catalog:latest"
+          image: "dinhcam89/retail-store-catalog:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -355,7 +355,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-cart:latest"
+          image: "dinhcam89/retail-store-cart:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -596,7 +596,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-orders:latest"
+          image: "dinhcam89/retail-store-orders:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -844,7 +844,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-checkout:latest"
+          image: "dinhcam89/retail-store-checkout:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -996,7 +996,7 @@ spec:
               drop:
               - ALL
             readOnlyRootFilesystem: false
-          image: "dinhcam89/dinhcam89-assets:latest"
+          image: "dinhcam89/retail-store-assets:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -1130,7 +1130,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/dinhcam89-ui:latest"
+          image: "dinhcam89/retail-store-ui:{{IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
