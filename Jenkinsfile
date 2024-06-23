@@ -122,7 +122,7 @@ pipeline {
     post {
         always {
             cleanWs()
-            sh 'docker rmi -f $(docker images -aq)'
+            sh 'docker rmi $(docker images -q)'
             sh 'docker logout'
         //
         }
