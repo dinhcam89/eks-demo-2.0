@@ -29,6 +29,7 @@ pipeline {
                             break
                     }
                 }
+                echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
         // stage('SCA with OWASP Dependency Check') {
