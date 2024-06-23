@@ -99,7 +99,7 @@ pipeline {
 					   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
 					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
 					   sed -i "s/{{IMAGE_TAG}}/${TAG}/g" ${DEPLOYMENT_FILE}
-					   git checkout dev
+					   git checkout ${env.BRANCH_NAME}
                        git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
 					   cd ..
 					   [[ -d ${GIT_REPO_NAME} ]] && rm -r ${GIT_REPO_NAME}
@@ -118,11 +118,12 @@ pipeline {
         //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-ui.html dinhcam89/retail-store-ui:${TAG}"
         //     }
         // }
+        // test
     }
     post {
         always {
             cleanWs()
-            // sh 'docker rmi -f $(docker images -aq)'
+            sh 'docker rmi -f $(docker images -aq)'
             sh 'docker logout'
         //
         }
