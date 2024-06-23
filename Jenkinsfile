@@ -116,7 +116,6 @@ pipeline {
         //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-ui.html dinhcam89/retail-store-ui:${TAG}"
         //     }
         // }
-        //
     }
     post {
         always {
