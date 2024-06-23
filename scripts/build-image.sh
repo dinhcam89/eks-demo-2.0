@@ -60,7 +60,7 @@ parse_params() {
   quiet=false
   builder='paketobuildpacks/builder:full'
   repository='dinhcam89'
-  tag='latest'
+  tag=''
   service='*'
 
   while :; do

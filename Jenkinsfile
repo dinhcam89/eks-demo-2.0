@@ -101,7 +101,6 @@ pipeline {
 					   sed -i "s/v[0-9]*\\.[0-9]*/${TAG}/g" ${DEPLOYMENT_FILE}
                        git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
 					   cd ..
-					   [[ -d ${GIT_REPO_NAME} ]] && rm -r ${GIT_REPO_NAME}
 					   """		
 				}				
             }
