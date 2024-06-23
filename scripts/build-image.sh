@@ -59,7 +59,7 @@ parse_params() {
   arm=false
   quiet=false
   builder='paketobuildpacks/builder:full'
-  repository='dinhcam89'
+  repository='retail-store'
   tag='latest'
   service='*'
 
