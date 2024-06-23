@@ -36,30 +36,30 @@ pipeline {
                 echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
-        // stage('SCA with OWASP Dependency Check') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '''
-        //             -o './'
-        //             -s './'
-        //             -f 'ALL'
-        //             --prettyPrint''', odcInstallation: 'Dependency-Check'
+        stage('SCA with OWASP Dependency Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: 'Dependency-Check'
 
-        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        //     }
-        // }
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         script {
-        //             // requires SonarQube Scanner 2.8+
-        //             scannerHome = tool 'SonarScanner'
-        //         }
-        //         withSonarQubeEnv('SonarQube Server') {
-        //             sh "${scannerHome}/bin/sonar-scanner \
-        //             -Dsonar.projectKey=retail-shop-microservices \
-        //             -Dsonar.java.binaries=."
-        //         }
-        //     }
-        // }
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // requires SonarQube Scanner 2.8+
+                    scannerHome = tool 'SonarScanner'
+                }
+                withSonarQubeEnv('SonarQube Server') {
+                    sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=retail-shop-microservices \
+                    -Dsonar.java.binaries=."
+                }
+            }
+        }
         stage('Login to Docker Hub') {
             steps {
                 sh 'sudo su - jenkins'
