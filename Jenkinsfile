@@ -84,12 +84,12 @@ pipeline {
         }
         stage('Push Images to Docker Hub') {
             steps {
-                sh "docker push dinhcam89/retail-store-catalog:${TAG}"
-                sh "docker push dinhcam89/retail-store-cart:${TAG}"
-                sh "docker push dinhcam89/retail-store-orders:${TAG}"
-                sh "docker push dinhcam89/retail-store-checkout:${TAG}"
-                sh "docker push dinhcam89/retail-store-assets:${TAG}"
                 sh "docker push dinhcam89/retail-store-ui:${TAG}"
+                sh "docker push dinhcam89/retail-store-orders:${TAG}"
+                sh "docker push dinhcam89/retail-store-cart:${TAG}"
+                sh "docker push dinhcam89/retail-store-checkout:${TAG}"
+                sh "docker push dinhcam89/retail-store-catalog:${TAG}"
+                sh "docker push dinhcam89/retail-store-assets:${TAG}" 
             }
         }
         stage('Update value in helm-chart') {
