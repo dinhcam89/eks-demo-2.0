@@ -96,7 +96,6 @@ pipeline {
             steps {
 				withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 				sh """#!/bin/bash
-					   [[ -d ${helmRepo} ]] && rm -r ${helmRepo}
 					   git clone ${GIT_REPO} --branch ${GLOBAL_ENVIRONMENT}
 					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
 					   sed -i "s/{{IMAGE_TAG}}/${TAG}/g" ${DEPLOYMENT_FILE}
