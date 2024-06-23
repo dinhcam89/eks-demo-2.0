@@ -3,31 +3,59 @@ pipeline {
 
     environment {
         DOCKERHB_CREDENTIALS = credentials('dockerhub')
+        GLOBAL_ENVIRONMENT = 'NO_DEPLOYMENT'
+        ENVIRONMENT_STAGING = 'staging'
+        VERSION = "${env.BUILD_NUMBER}"
+        TAG = ''
     }
 
     stages {
-        steps {
-            dependencyCheck additionalArguments: '''
-                    -o './'
-                    -s './'
-                    -f 'ALL'
-                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        }
-        stage('SonarQube Analysis') {
+        stage('Setup environment') {
             steps {
+                echo 'Setting up environment'
                 script {
-                    // requires SonarQube Scanner 2.8+
-                    scannerHome = tool 'SonarScanner'
+                    // Determine whether this is staging or production build
+                    switch (env.BRANCH_NAME) {
+                        case 'dev':
+                            GLOBAL_ENVIRONMENT = 'staging'
+                            TAG = 'staging' + '-v1.' + VERSION
+                            break
+                        case 'main':
+                            GLOBAL_ENVIRONMENT = 'prod'
+                            TAG = 'prod' + '-v1.' + VERSION
+                            break
+                        default: 
+                            GLOBAL_ENVIRONMENT = 'NO_DEPLOYMENT'
+                            break
+                    }
                 }
-                withSonarQubeEnv('SonarQube Server') {
-                    sh "${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=retail-shop-microservices \
-                    -Dsonar.java.binaries=."
-                }
+                echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
+        // stage('SCA with OWASP Dependency Check') {
+        //     steps {
+        //         dependencyCheck additionalArguments: '''
+        //             -o './'
+        //             -s './'
+        //             -f 'ALL'
+        //             --prettyPrint''', odcInstallation: 'Dependency-Check'
+
+        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+        //     }
+        // }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             // requires SonarQube Scanner 2.8+
+        //             scannerHome = tool 'SonarScanner'
+        //         }
+        //         withSonarQubeEnv('SonarQube Server') {
+        //             sh "${scannerHome}/bin/sonar-scanner \
+        //             -Dsonar.projectKey=retail-shop-microservices \
+        //             -Dsonar.java.binaries=."
+        //         }
+        //     }
+        // }
         stage('Login to Docker Hub') {
             steps {
                 sh 'sudo su - jenkins'
@@ -37,12 +65,12 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 sh "chmod +x -R ${env.WORKSPACE}"
-                sh 'scripts/build-image.sh -s assets -t latest'
-                sh 'scripts/build-image.sh -s cart -t latest'
-                sh 'scripts/build-image.sh -s catalog -t latest'
-                sh 'scripts/build-image.sh -s checkout -t latest'
-                sh 'scripts/build-image.sh -s orders -t latest'
-                sh 'scripts/build-image.sh -s ui -t latest'
+                sh "scripts/build-image.sh -s assets -t ${TAG}"
+                sh "scripts/build-image.sh -s cart -t ${TAG}"
+                sh "scripts/build-image.sh -s catalog -t ${TAG}"
+                sh "scripts/build-image.sh -s checkout -t ${TAG}"
+                sh "scripts/build-image.sh -s orders -t ${TAG}"
+                sh "scripts/build-image.sh -s ui -t ${TAG}"
             }
         }
         stage('View Images') {
@@ -52,62 +80,25 @@ pipeline {
         }
         stage('Push Images to Docker Hub') {
             steps {
-                sh 'docker push dinhcam89/dinhcam89-catalog:latest'
-                sh 'docker push dinhcam89/dinhcam89-cart:latest'
-                sh 'docker push dinhcam89/dinhcam89-orders:latest'
-                sh 'docker push dinhcam89/dinhcam89-checkout:latest'
-                sh 'docker push dinhcam89/dinhcam89-assets:latest'
-                sh 'docker push dinhcam89/dinhcam89-ui:latest'
+                sh "docker push dinhcam89/retail-store-catalog:${TAG}"
+                sh "docker push dinhcam89/retail-store-cart:${TAG}"
+                sh "docker push dinhcam89/retail-store-orders:${TAG}"
+                sh "docker push dinhcam89/retail-store-checkout:${TAG}"
+                sh "docker push dinhcam89/retail-store-assets:${TAG}"
+                sh "docker push dinhcam89/retail-store-ui:${TAG}"
             }
         }
-        // stage('Deploy and Configure ArgoCD') {
+        // stage('Scan Docker Images with Trivy') {
         //     steps {
-        //         sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
-        //         sh 'kubectl create namespace argocd'
-        //         sh 'kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml'
-        //         sh 'kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=300s'
-        //         sh 'kubectl patch svc argocd-server -n argocd -p \'{"spec": {"type": "LoadBalancer"}}\''
+        //         sh 'TMPDIR=/home/jenkins'
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-catalog.html dinhcam89/retail-store-catalog:${TAG}"
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-cart.html dinhcam89/retail-store-cart:${TAG}"
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-orders.html dinhcam89/retail-store-orders:${TAG}"
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-checkout.html dinhcam89/retail-store-checkout:${TAG}"
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-assets.html dinhcam89/retail-store-assets:${TAG}"
+        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-ui.html dinhcam89/retail-store-ui:${TAG}"
         //     }
         // }
-        // stage('Deploy to Staging Environment') {
-        //     steps {
-        //         sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-staging'
-        //         sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-        //     }
-        // }
-        // stage('Deploy to Production Environment') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 timeout(time: 5, unit: 'MINUTES') {
-        //                     env.useChoice = input message: 'Can it be deployed to the production environment?', ok: 'Yes',
-        //                     parameters: [choice(name: 'useChoice', choices: 'Yes\nNo', description: 'Choose whether to deploy to production or not')]
-        //                 }
-        //                 if (env.useChoice == 'Yes') {
-        //                     sh 'sudo su - jenkins'
-        //                     sh 'aws eks --region ap-southeast-1 update-kubeconfig --name eks-cicd-prod'
-        //                     sh 'kubectl apply -f dist/kubernetes/deploy.yaml'
-        //                 } else {
-        //                     echo 'The deployment is not allowed to the production environment'
-        //                 }
-        //             }
-        //             catch (Exception err) {
-        //             // handle the exception
-        //             }
-        //         }
-        //     }
-        // }
-        stage('Scan Docker Images with Trivy') {
-            steps {
-                sh 'TMPDIR=/home/jenkins'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-catalog.html dinhcam89/dinhcam89-catalog:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-cart.html dinhcam89/dinhcam89-cart:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-orders.html dinhcam89/dinhcam89-orders:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-checkout.html dinhcam89/dinhcam89-checkout:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-assets.html dinhcam89/dinhcam89-assets:latest'
-                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report-ui.html dinhcam89/dinhcam89-ui:latest'
-            }
-        }
     }
     post {
         always {
