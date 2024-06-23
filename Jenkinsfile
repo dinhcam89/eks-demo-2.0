@@ -3,6 +3,10 @@ pipeline {
 
     environment {
         DOCKERHB_CREDENTIALS = credentials('dockerhub')
+        GIT_REPO = 'https://github.com/dinhcam89/eks_cicd.git'
+        MANIFEST_PATH = 'dist/kubernetes/'
+        DEPLOYMENT_FILE = 'deploy.yaml'
+        GIT_REPO_NAME = 'eks_cicd'
         GLOBAL_ENVIRONMENT = 'NO_DEPLOYMENT'
         ENVIRONMENT_STAGING = 'staging'
         VERSION = "${env.BUILD_NUMBER}"
@@ -86,6 +90,21 @@ pipeline {
                 sh "docker push dinhcam89/retail-store-checkout:${TAG}"
                 sh "docker push dinhcam89/retail-store-assets:${TAG}"
                 sh "docker push dinhcam89/retail-store-ui:${TAG}"
+            }
+        }
+        stage('Update value in helm-chart') {
+            steps {
+				withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+				sh """#!/bin/bash
+					   [[ -d ${helmRepo} ]] && rm -r ${helmRepo}
+					   git clone ${GIT_REPO} --branch ${GLOBAL_ENVIRONMENT}
+					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
+					   sed -i "s/{{IMAGE_TAG}}/${TAG}/g" ${DEPLOYMENT_FILE}
+					   git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
+					   cd ..
+					   [[ -d ${GIT_REPO_NAME} ]] && rm -r ${GIT_REPO_NAME}
+					   """		
+				}				
             }
         }
         // stage('Scan Docker Images with Trivy') {
