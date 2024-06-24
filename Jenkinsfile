@@ -36,17 +36,17 @@ pipeline {
                 echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
-        // stage('SCA with OWASP Dependency Check') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '''
-        //             -o './'
-        //             -s './'
-        //             -f 'ALL'
-        //             --prettyPrint''', odcInstallation: 'Dependency-Check'
+        stage('SCA with OWASP Dependency Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: 'Dependency-Check'
 
-        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        //     }
-        // }
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 script {
