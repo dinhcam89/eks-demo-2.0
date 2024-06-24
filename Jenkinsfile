@@ -36,30 +36,30 @@ pipeline {
                 echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
-        // stage('SCA with OWASP Dependency Check') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '''
-        //             -o './'
-        //             -s './'
-        //             -f 'ALL'
-        //             --prettyPrint''', odcInstallation: 'Dependency-Check'
+        stage('SCA with OWASP Dependency Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: 'Dependency-Check'
 
-        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        //     }
-        // }
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         script {
-        //             // requires SonarQube Scanner 2.8+
-        //             scannerHome = tool 'SonarScanner'
-        //         }
-        //         withSonarQubeEnv('SonarQube Server') {
-        //             sh "${scannerHome}/bin/sonar-scanner \
-        //             -Dsonar.projectKey=retail-shop-microservices \
-        //             -Dsonar.java.binaries=."
-        //         }
-        //     }
-        // }
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // requires SonarQube Scanner 2.8+
+                    scannerHome = tool 'SonarScanner'
+                }
+                withSonarQubeEnv('SonarQube Server') {
+                    sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=retail-shop-microservices \
+                    -Dsonar.java.binaries=."
+                }
+            }
+        }
         stage('Login to Docker Hub') {
             steps {
                 sh 'sudo su - jenkins'
@@ -84,28 +84,28 @@ pipeline {
         }
         stage('Push Images to Docker Hub') {
             steps {
-                sh "docker push dinhcam89/retail-store-catalog:${TAG}"
-                sh "docker push dinhcam89/retail-store-cart:${TAG}"
-                sh "docker push dinhcam89/retail-store-orders:${TAG}"
-                sh "docker push dinhcam89/retail-store-checkout:${TAG}"
-                sh "docker push dinhcam89/retail-store-assets:${TAG}"
                 sh "docker push dinhcam89/retail-store-ui:${TAG}"
+                sh "docker push dinhcam89/retail-store-orders:${TAG}"
+                sh "docker push dinhcam89/retail-store-cart:${TAG}"
+                sh "docker push dinhcam89/retail-store-checkout:${TAG}"
+                sh "docker push dinhcam89/retail-store-catalog:${TAG}"
+                sh "docker push dinhcam89/retail-store-assets:${TAG}" 
             }
         }
-        stage('Update value in helm-chart') {
-            steps {
-				withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-				sh """#!/bin/bash
-					   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
-					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
-					   sed -i "s/v[0-9]*\\.[0-9]*/${TAG}/g" ${DEPLOYMENT_FILE}
-                       git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
-					   cd ..
-					   [[ -d ${GIT_REPO_NAME} ]] && rm -r ${GIT_REPO_NAME}
-					   """		
-				}				
-            }
-        }
+        //
+        // stage('Update value in helm-chart') {
+        //     steps {
+		// 		withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+		// 		sh """#!/bin/bash
+		// 			   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
+		// 			   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
+		// 			   sed -i "s/\(dinhcam89\/retail-store-[^:]*:\)[^ \"]*/\1${TAG}/g" ${DEPLOYMENT_FILE}
+        //                git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
+		// 			   cd ..
+		// 			   """		
+		// 		}				
+        //     }
+        // }
         // stage('Scan Docker Images with Trivy') {
         //     steps {
         //         sh 'TMPDIR=/home/jenkins'
@@ -121,7 +121,7 @@ pipeline {
     post {
         always {
             cleanWs()
-            sh 'docker rmi -f $(docker images -aq)'
+            sh 'docker rmi -f $(docker images -q)'
             sh 'docker logout'
         //
         }
