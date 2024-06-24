@@ -10,7 +10,7 @@ pipeline {
         GLOBAL_ENVIRONMENT = 'NO_DEPLOYMENT'
         ENVIRONMENT_STAGING = 'staging'
         VERSION = "${env.BUILD_NUMBER}"
-        TAG = 'staging' + '-v1.' + VERSION
+        TAG = 'staging' + '-v1.' + '${env.BUILD_NUMBER}'
     }
 
     stages {
