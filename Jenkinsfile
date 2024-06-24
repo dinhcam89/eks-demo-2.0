@@ -101,7 +101,7 @@ pipeline {
 					   sed -i "s/\\(dinhcam89\\/retail-store-[^:]*:\\)[^ \\"]*/\\1${TAG}/g" ${DEPLOYMENT_FILE}
                        git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
 					   cd ..
-					   """		
+					   """
 				}				
             }
         }
