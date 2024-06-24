@@ -10,7 +10,7 @@ pipeline {
         GLOBAL_ENVIRONMENT = 'NO_DEPLOYMENT'
         ENVIRONMENT_STAGING = 'staging'
         VERSION = "${env.BUILD_NUMBER}"
-        TAG = ''
+        TAG = 'staging' + '-v1.' + "${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -92,32 +92,32 @@ pipeline {
                 sh "docker push dinhcam89/retail-store-assets:${TAG}" 
             }
         }
-        //
-        // stage('Update value in helm-chart') {
-        //     steps {
-		// 		withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-		// 		sh """#!/bin/bash
-		// 			   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
-		// 			   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
-		// 			   sed -i "s/\(dinhcam89\/retail-store-[^:]*:\)[^ \"]*/\1${TAG}/g" ${DEPLOYMENT_FILE}
-        //                git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
-		// 			   cd ..
-		// 			   """		
-		// 		}				
-        //     }
-        // }
-        // stage('Scan Docker Images with Trivy') {
-        //     steps {
-        //         sh 'TMPDIR=/home/jenkins'
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-catalog.html dinhcam89/retail-store-catalog:${TAG}"
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-cart.html dinhcam89/retail-store-cart:${TAG}"
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-orders.html dinhcam89/retail-store-orders:${TAG}"
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-checkout.html dinhcam89/retail-store-checkout:${TAG}"
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-assets.html dinhcam89/retail-store-assets:${TAG}"
-        //         sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-ui.html dinhcam89/retail-store-ui:${TAG}"
-        //     }
-        // }
+        stage('Update value in helm-chart') {
+            steps {
+				withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+				sh """#!/bin/bash
+					   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
+					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
+					   sed -i "s/\\(dinhcam89\\/retail-store-[^:]*:\\)[^ \\"]*/\\1${TAG}/g" ${DEPLOYMENT_FILE}
+                       git add . ; git commit -m "Update deployment file to version ${TAG}";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
+					   cd ..
+					   """		
+				}				
+            }
+        }
+        stage('Scan Docker Images with Trivy') {
+            steps {
+                sh 'TMPDIR=/home/jenkins'
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-catalog.html dinhcam89/retail-store-catalog:${TAG}"
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-cart.html dinhcam89/retail-store-cart:${TAG}"
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-orders.html dinhcam89/retail-store-orders:${TAG}"
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-checkout.html dinhcam89/retail-store-checkout:${TAG}"
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-assets.html dinhcam89/retail-store-assets:${TAG}"
+                sh "trivy image --format template --template '@/usr/bin/html.tpl' -o trivy-report-ui.html dinhcam89/retail-store-ui:${TAG}"
+            }
+        }
     }
+    // Post build actions
     post {
         always {
             cleanWs()
