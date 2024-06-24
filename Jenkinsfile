@@ -12,7 +12,7 @@ pipeline {
         VERSION = "${env.BUILD_NUMBER}"
         TAG = ''
     }
-
+    // Define the stages of the pipeline
     stages {
         stage('Setup environment') {
             steps {
@@ -36,17 +36,17 @@ pipeline {
                 echo "Environment: ${GLOBAL_ENVIRONMENT}"
             }
         }
-        // stage('SCA with OWASP Dependency Check') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '''
-        //             -o './'
-        //             -s './'
-        //             -f 'ALL'
-        //             --prettyPrint''', odcInstallation: 'Dependency-Check'
+        stage('SCA with OWASP Dependency Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: 'Dependency-Check'
 
-        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        //     }
-        // }
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -99,7 +99,7 @@ pipeline {
 					   git clone ${GIT_REPO} --branch ${env.BRANCH_NAME}
 					   cd ${GIT_REPO_NAME}/${MANIFEST_PATH}
 					   sed -i "s/\\(dinhcam89\\/retail-store-[^:]*:\\)[^ \\"]*/\\1${TAG}/g" ${DEPLOYMENT_FILE}
-                       git add . ; git commit -m "Update deployment file to version ${TAG} [skip ci]";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git -m "[skip ci]"
+                       git add . ; git commit -m "Update deployment file to version ${TAG} [ci skip]";git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/dinhcam89/eks_cicd.git
 					   cd ..
 					   """
 				}				
