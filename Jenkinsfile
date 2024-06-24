@@ -12,7 +12,7 @@ pipeline {
         VERSION = "${env.BUILD_NUMBER}"
         TAG = ''
     }
-
+    // Define the stages of the pipeline
     stages {
         stage('Setup environment') {
             steps {
