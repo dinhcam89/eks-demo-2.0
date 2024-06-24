@@ -14,23 +14,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('Check Commit Message') {
-            steps {
-                script {
-                    def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-                    if (commitMessage.contains('[ci skip]')) {
-                        echo 'Skipping build as this is a Jenkins-imagetag-update push.'
-                        currentBuild.result = 'SUCCESS'
-                        return
-                    }
-                }
-            }
-        }
         stage('Setup environment') {
             steps {
                 echo 'Setting up environment'
