@@ -141,7 +141,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/retail-store-catalog:staging-v1.8"
+          image: "dinhcam89/retail-store-catalog:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -355,7 +355,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/retail-store-cart:staging-v1.8"
+          image: "dinhcam89/retail-store-cart:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -596,7 +596,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/retail-store-orders:staging-v1.8"
+          image: "dinhcam89/retail-store-orders:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -844,7 +844,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/retail-store-checkout:staging-v1.8"
+          image: "dinhcam89/retail-store-checkout:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -996,7 +996,7 @@ spec:
               drop:
               - ALL
             readOnlyRootFilesystem: false
-          image: "dinhcam89/retail-store-assets:staging-v1.8"
+          image: "dinhcam89/retail-store-assets:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -1130,7 +1130,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "dinhcam89/retail-store-ui:staging-v1.8"
+          image: "dinhcam89/retail-store-ui:staging-v1.7"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
