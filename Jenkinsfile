@@ -92,6 +92,7 @@ pipeline {
                 sh "docker push dinhcam89/retail-store-assets:${TAG}" 
             }
         }
+        //
         // stage('Update value in helm-chart') {
         //     steps {
 		// 		withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
